@@ -36,3 +36,20 @@ configure_file(
   "${CMAKE_CURRENT_BINARY_DIR}/grid-parameters.nml"
   COPYONLY
 )
+
+enable_testing()
+
+#---------------------------------------------------------------------------------------
+# Define macro for adding CAF tests, and ensuring proper flags are passed to MPI runtime
+#---------------------------------------------------------------------------------------
+function(add_caf_test name num_caf_img test_target)
+  add_test(NAME ${name}
+    COMMAND cafrun -n ${num_caf_img} ./${test_target})
+  set_tests_properties(${name}
+    PROPERTIES
+    PASS_REGULAR_EXPRESSION "Test passed."
+    PROCESSORS ${num_caf_img})
+endfunction()
+
+add_caf_test(test-dimensional-grid 4 test-dimensional-grid)
+add_caf_test(test-structured-grid 4 test-structured-grid)
