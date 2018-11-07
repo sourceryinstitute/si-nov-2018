@@ -14,9 +14,23 @@ module structured_grid_interface
     procedure, nopass :: get_grid_resolution
     procedure allocate_my_partition
     procedure my_partition_size
+    procedure, private :: subtract
+    generic :: operator(-)=>subtract ! ,negate (not implemented)
+   !procedure, private, pass(rhs) :: subtract  ! use this to invoke a procedure on the right-hand-side operand
   end type
 
+ ! Fortran 90 style operator uses static (compile-time) polymorphism and is not heritable
+ !interface operator(-)
+ !   module procedure subtract,negate, subtract_dimensional_grid
+ !end interface
+
   interface
+
+    module function subtract(lhs,rhs) result(difference)
+      !! Return the component-wise difference between the two operands
+      class(structured_grid), intent(in) :: lhs,rhs
+      class(structured_grid), allocatable :: difference
+    end function
 
     module function get_grid_resolution(file_name) result(resolution)
       !! Read and return grid size parameters

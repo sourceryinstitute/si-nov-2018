@@ -4,6 +4,26 @@ submodule(structured_grid_interface) structured_grid_implementation
 
 contains
 
+    module procedure subtract
+
+      if (assertions) then
+        !! Preconditions
+        call assert(allocated(lhs%x) .and. allocated(rhs%x),"operands allocated")
+        call assert(same_type_as(lhs,rhs),"consistent operand types")
+      end if
+
+      allocate(difference,mold=lhs)
+
+      difference%x = lhs%x - rhs%x
+
+      if (assertions) then
+        !! Postconditions
+        call assert(allocated(difference%x),"operands allocated")
+        call assert(same_type_as(difference,lhs),"consistent result type")
+      end if
+
+    end procedure
+
     module procedure get_grid_resolution
 
       integer, parameter :: success=0, reader=1
