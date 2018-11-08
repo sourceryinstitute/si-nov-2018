@@ -15,8 +15,8 @@ program main
   associate(space_dimension=>size(nx))
     if (assertions) call assert(space_dimension==3,"3D grid")
 
-  !call x%initialize(one)
-  !call y%initialize(one)
+   call x%initialize(one)
+   call y%initialize(one)
 
    z = y - x
 
