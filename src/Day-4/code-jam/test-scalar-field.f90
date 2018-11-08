@@ -3,20 +3,22 @@ program main
   !!
   !! Check addition and real-scalar pre-multiplication via abstract calculus
   use assertion_interface, only : assert, assertions
-  use field_abstract_interface, only : field
+  use scalar_field_interface, only : scalar_field
   implicit none
   real, parameter :: a=1.
-  class(field), allocatable :: x[:],y[:],z[:]
+  class(field), allocatable :: x,y,z
   integer, allocatable :: nx(:)
+  real, parameter :: one(*,*,*) = reshape([1.],[1,1,1])
 
   nx = get_grid_resolution("grid-parameters.nml")
 
   associate(space_dimension=>size(nx))
     if (assertions) call assert(space_dimension==3,"3D grid")
 
-   call x%initialize()
-   call y%initialize()
-   call z%initialize()
+   call x%initialize(one)
+   call y%initialize(one)
+
+   z = y - x
 
   end associate
 
