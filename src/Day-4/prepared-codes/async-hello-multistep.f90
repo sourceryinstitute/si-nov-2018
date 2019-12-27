@@ -34,10 +34,7 @@ program main
 
         spin_query_work: block
           integer :: image,ready_count
-          integer, save, allocatable :: previous_count(:)
           logical, dimension(2:ni) :: greeting_not_printed
-
-          if (.not. allocated(previous_count)) allocate(previous_count(2:ni),source=0)
 
           greeting_not_printed=.true.
 
@@ -45,13 +42,13 @@ program main
             query: do image=2,ni             ! Atomically access each event's counter
               if (greeting_not_printed(image)) then      ! Print greetings that have not been printed during this step
                 call event_query( greeting_ready(image), ready_count)
-                work_if_ready: select case(ready_count-previous_count(image))
+                work_if_ready: select case(ready_count)
                   case(0) ! keep spinning until greeting is ready
                   case(1) ! event posted so get and print greeting
+                    event wait(greeting_ready(image))
                     print *,greeting[image]
                     event post(ok_to_overwrite[image])
                     greeting_not_printed(image)=.false.
-                    previous_count(image)=ready_count
                   case default
                     if (ready_count<0) error stop "compiler bug: negative event_query count"
                     error stop "multiple events happened since the last event query"
